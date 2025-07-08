@@ -33,7 +33,8 @@ venv.bak/
 
 # Jupyter Notebook
 .ipynb_checkpoints/
-*.ipynb
+# Uncommenta la riga sotto se non vuoi tracciare i notebook
+# *.ipynb
 
 # Environment variables
 .env

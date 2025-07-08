@@ -46,39 +46,90 @@ Per scaricare il dataset GTZAN:
 
 ## Installazione
 
-### 1. Creare un Virtual Environment
+### Installazione Automatica (Consigliata)
+
+#### Linux/macOS:
+```bash
+./setup.sh
+```
+
+#### Windows (Prompt dei comandi):
+```cmd
+setup.bat
+```
+
+#### Windows (PowerShell):
+```powershell
+.\setup.ps1
+```
+
+### Installazione Manuale
+
+#### 1. Creare un Virtual Environment
 
 ```bash
 python -m venv venv
 source venv/bin/activate  # Su Windows: venv\Scripts\activate
 ```
 
-### 2. Installare le Dipendenze
+#### 2. Installare le Dipendenze
 
 ```bash
-# Per calcoli numerici, audio e gestione dati
-pip install numpy pandas librosa
-
-# Per il machine learning e il deep learning
-pip install tensorflow scikit-learn
-
-# Per la visualizzazione
-pip install matplotlib seaborn jupyterlab
+pip install -r requirements.txt
 ```
 
 ## Utilizzo
 
-### 1. Preparazione dei Dati
+### 1. Attivare l'Ambiente Virtuale
+```bash
+# Linux/macOS
+source venv/bin/activate
+
+# Windows (Prompt dei comandi)
+venv\Scripts\activate.bat
+
+# Windows (PowerShell)
+venv\Scripts\Activate.ps1
+```
+
+### 2. Avviare Jupyter Lab
+```bash
+jupyter lab
+```
+
+### 3. Preparazione dei Dati
 Eseguire il notebook `01_Data_Preparation_and_Feature_Extraction.ipynb` per:
 - Caricare e esplorare il dataset
 - Estrarre features audio (MFCC, Spectral Features, ecc.)
 - Preparare i dati per il training
 
-### 2. Training e Valutazione
+### 4. Training e Valutazione
 Eseguire il notebook `02_Model_Training_and_Evaluation.ipynb` per:
 - Addestrare modelli di machine learning e deep learning
 - Valutare le performance
 - Confrontare diversi approcci
+
+## Troubleshooting
+
+### Problemi Comuni
+
+**Errore: "python non riconosciuto"**
+- Assicurati che Python sia installato e nel PATH
+- Su Windows, reinstalla Python selezionando "Add Python to PATH"
+
+**Errore di permessi su PowerShell**
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+**Problemi con TensorFlow**
+- Su sistemi più vecchi, potrebbe essere necessario installare una versione specifica
+- Per CPU only: `pip install tensorflow-cpu`
+
+**Errori di memoria durante il training**
+- Riduci la dimensione del batch
+- Usa il gradient checkpointing
+- Considera l'uso di un dataset ridotto per test
 
 ## Features Audio Estratte
 
