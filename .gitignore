@@ -43,6 +43,10 @@ venv.bak/
 .env.test.local
 .env.production.local
 
+# Kaggle credentials
+kaggle/
+*.json
+
 # IDE
 .vscode/
 .idea/
@@ -68,10 +72,8 @@ Thumbs.db
 # *.pickle
 
 # Large datasets - GTZAN
-data/Gtzan/genres_original/*.wav
-data/Gtzan/genres_original/**/*.wav
-data/processed/
-data/features/
+data/gtzan/genres/
+data/gtzan/images/
 
 # Model files
 models/

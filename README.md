@@ -20,8 +20,11 @@ naml_project/
 │           ├── reggae/
 │           └── rock/
 ├── notebooks/
-│   ├── 01_Data_Preparation_and_Feature_Extraction.ipynb
-│   └── 02_Model_Training_and_Evaluation.ipynb
+│   ├── 00_kaggle_dataset_download.ipynb      # Download automatico dataset
+│   ├── 01_data_exploration.ipynb             # Esplorazione dati
+│   ├── 02_feature_extraction.ipynb           # Estrazione features
+│   ├── 03_model_training.ipynb               # Training modelli
+│   └── 04_evaluation.ipynb                   # Valutazione risultati
 ├── scripts/
 │   └── (funzioni riutilizzabili)
 ├── venv/                         # Virtual environment
@@ -39,10 +42,51 @@ Il progetto utilizza il dataset GTZAN, un dataset standard per la classificazion
 
 ### Download del Dataset
 
+#### Opzione 1: Download Manuale
 Per scaricare il dataset GTZAN:
 1. Visita il sito ufficiale: http://marsyas.info/downloads/datasets.html
 2. Scarica il file `genres.tar.gz`
 3. Estrai il contenuto nella cartella `data/Gtzan/`
+
+#### Opzione 2: Download da Kaggle (Consigliato)
+Il progetto include il supporto per Kaggle. Per utilizzarlo:
+
+1. **Installa le dipendenze Kaggle** (già incluse nel setup):
+   ```bash
+   pip install kaggle kagglehub
+   ```
+
+2. **Configura le credenziali Kaggle**:
+   
+   **Opzione A: Setup Automatico (Consigliato)**
+   ```bash
+   # Attiva l'ambiente virtuale
+   source venv/bin/activate
+   
+   # Esegui lo script di setup
+   python scripts/setup_kaggle.py
+   ```
+   
+   **Opzione B: Setup Manuale**
+   - Vai su https://www.kaggle.com/account
+   - Clicca su "Create New API Token" per scaricare `kaggle.json`
+   - Posiziona il file in:
+     - Linux/macOS: `~/.kaggle/kaggle.json`
+     - Windows: `C:\Users\<username>\.kaggle\kaggle.json`
+   - Imposta i permessi: `chmod 600 ~/.kaggle/kaggle.json` (Linux/macOS)
+
+3. **Scarica il dataset con Python**:
+   ```python
+   import kaggle
+   kaggle.api.dataset_download_files('andradaolteanu/gtzan-dataset-music-genre-classification', path='data/', unzip=True)
+   ```
+
+   Oppure usa kagglehub:
+   ```python
+   import kagglehub
+   path = kagglehub.dataset_download("andradaolteanu/gtzan-dataset-music-genre-classification")
+   print("Path to dataset files:", path)
+   ```
 
 ## Installazione
 
