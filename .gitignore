@@ -75,14 +75,6 @@ Thumbs.db
 data/gtzan/genres/
 data/gtzan/images/
 
-# Model files
-models/
-*.h5
-*.pkl
-*.joblib
-*.pt
-*.pth
-*.ckpt
 
 # Logs
 logs/
