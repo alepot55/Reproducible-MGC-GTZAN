@@ -1,0 +1,2 @@
+Experiment,Model,Optimizer,Test_Accuracy,Test_Loss,Best_Val_Accuracy,Epochs
+SimpleCNN_Adam,SimpleCNN,Adam,0.6729999780654907,0.9228382706642151,0.7110000252723694,70
