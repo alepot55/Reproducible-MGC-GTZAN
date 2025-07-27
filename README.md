@@ -1,226 +1,118 @@
-# Progetto Classificazione Genere Musicale
+# Music Genre Classification: From Reproducibility to a New SOTA
 
-Questo progetto implementa un sistema di classificazione automatica dei generi musicali utilizzando il dataset GTZAN e tecniche di machine learning e deep learning.
+**Authors:** Alessandro Potenza, Camilla Sed  
+**Course:** Numerical Analysis for Machine Learning, Politecnico di Milano
 
-## Struttura del Progetto
+---
+
+## 1. Project Overview
+
+This project provides a rigorous and reproducible investigation into Music Genre Classification (MGC) using the benchmark GTZAN dataset. The work is motivated by the reproducibility challenges prevalent in the field, where many published results report near-perfect accuracies that are difficult to verify and likely stem from methodological flaws.
+
+Our primary contribution is twofold:
+1.  **Establishing a Gold-Standard Pipeline:** We designed and implemented a data pre-processing and evaluation framework that explicitly prevents data leakage, a common pitfall in MGC research.
+2.  **A Systematic Architectural Study:** Using this robust pipeline, we conducted a comparative analysis of three distinct deep learning architectures. This study culminates in establishing a new, reliable State-of-the-Art (SOTA) performance on GTZAN and provides a clear narrative on architectural evolution for this specific task.
+
+Our final **U-Net-inspired classifier achieves a test accuracy of 83.5%**, demonstrating the superiority of a multi-scale feature learning approach. The entire project, from data preparation to final analysis, is documented and open-sourced to ensure full transparency and reproducibility.
+
+---
+
+## 2. Repository Structure
+
+The project is organized into a clean and logical directory structure:
 
 ```
-naml_project/
-├── data/
-│   └── Gtzan/                    # Dataset GTZAN
-│       └── genres_original/
-│           ├── blues/
-│           ├── classical/
-│           ├── country/
-│           ├── disco/
-│           ├── hiphop/
-│           ├── jazz/
-│           ├── metal/
-│           ├── pop/
-│           ├── reggae/
-│           └── rock/
-├── notebooks/
-│   ├── 00_kaggle_dataset_download.ipynb      # Download automatico dataset
-│   ├── 01_data_exploration.ipynb             # Esplorazione dati
-│   ├── 02_feature_extraction.ipynb           # Estrazione features
-│   ├── 03_model_training.ipynb               # Training modelli
-│   └── 04_evaluation.ipynb                   # Valutazione risultati
-├── scripts/
-│   └── (funzioni riutilizzabili)
-├── venv/                         # Virtual environment
-├── .gitignore
-├── requirements.txt
-└── README.md
+.
+├── models/              # Saved .keras models from the final training run.
+├── notebooks/           # Jupyter notebooks detailing the project workflow.
+│   ├── 00_Setup_and_Data_Preparation.ipynb
+│   ├── 01_Model_Training_Tournament.ipynb
+│   └── 02_Analysis_and_Publication_Results.ipynb
+├── paper.pdf            # The final research paper in PDF format.
+├── reports/             # All generated figures, tables, and reports.
+├── requirements.txt     # Python dependencies for the project.
+├── setup.sh             # Shell script to set up the environment and data.
+└── README.md            # This file.
 ```
 
-## Dataset
+---
 
-Il progetto utilizza il dataset GTZAN, un dataset standard per la classificazione dei generi musicali che contiene:
-- 10 generi musicali diversi
-- 100 tracce audio per genere (30 secondi ciascuna)
-- Formato: file audio WAV a 22050 Hz mono
+## 3. The Research Workflow: A Three-Notebook Journey
 
-### Download del Dataset
+Our research process is documented across three distinct Jupyter notebooks, each with a specific responsibility. This separation ensures a clean and reproducible workflow.
 
-#### Opzione 1: Download Manuale
-Per scaricare il dataset GTZAN:
-1. Visita il sito ufficiale: http://marsyas.info/downloads/datasets.html
-2. Scarica il file `genres.tar.gz`
-3. Estrai il contenuto nella cartella `data/Gtzan/`
+### 📓 `00_Setup_and_Data_Preparation.ipynb`
+This notebook is the foundation of the project. It handles the critical task of preparing the GTZAN dataset.
 
-#### Opzione 2: Download da Kaggle (Consigliato)
-Il progetto include il supporto per Kaggle. Per utilizzarlo:
+-   **Input:** Raw GTZAN audio files.
+-   **Process:**
+    1.  Performs a leak-free, stratified split of the *file paths* (60% train, 20% validation, 20% test).
+    2.  Augments the data by segmenting each 30-second clip into 10 smaller chunks.
+    3.  Extracts Mel-spectrograms from each audio segment.
+    4.  Standardizes features by fitting a scaler **only on the training data**.
+-   **Output:** Processed NumPy arrays (`X_train`, `y_train`, etc.) and fitted `scaler`/`label_encoder` objects saved to the `data/processed` directory (not tracked by Git).
 
-1. **Installa le dipendenze Kaggle** (già incluse nel setup):
-   ```bash
-   pip install kaggle kagglehub
-   ```
+### 📓 `01_Model_Training_Tournament.ipynb`
+This is the primary computation notebook. It takes the processed data and runs our definitive comparative analysis.
 
-2. **Configura le credenziali Kaggle**:
-   
-   **Opzione A: Setup Automatico (Consigliato)**
-   ```bash
-   # Attiva l'ambiente virtuale
-   source venv/bin/activate
-   
-   # Esegui lo script di setup
-   python scripts/setup_kaggle.py
-   ```
-   
-   **Opzione B: Setup Manuale**
-   - Vai su https://www.kaggle.com/account
-   - Clicca su "Create New API Token" per scaricare `kaggle.json`
-   - Posiziona il file in:
-     - Linux/macOS: `~/.kaggle/kaggle.json`
-     - Windows: `C:\Users\<username>\.kaggle\kaggle.json`
-   - Imposta i permessi: `chmod 600 ~/.kaggle/kaggle.json` (Linux/macOS)
+-   **Input:** The processed data arrays from Notebook 00.
+-   **Process:**
+    1.  Defines our three curated architectures: `Efficient_VGG`, `ResSE_AudioCNN`, and `UNet_Audio_Classifier`.
+    2.  Systematically trains and evaluates each model under identical conditions.
+    3.  Uses robust callbacks for early stopping, learning rate reduction, and saving the best model weights.
+-   **Output:**
+    -   Best model weights (`.keras` files) saved to the `models/` directory.
+    -   A final summary CSV (`training_summary_final.csv`) saved to the `reports/` directory.
 
-3. **Scarica il dataset con Python**:
-   ```python
-   import kaggle
-   kaggle.api.dataset_download_files('andradaolteanu/gtzan-dataset-music-genre-classification', path='data/', unzip=True)
-   ```
+### 📓 `02_Analysis_and_Publication_Results.ipynb`
+This notebook is purely for analysis and visualization. It **does not train any models**.
 
-   Oppure usa kagglehub:
-   ```python
-   import kagglehub
-   path = kagglehub.dataset_download("andradaolteanu/gtzan-dataset-music-genre-classification")
-   print("Path to dataset files:", path)
-   ```
+-   **Input:** The `training_summary_final.csv` and the best `.keras` models.
+-   **Process:**
+    1.  Loads the tournament results and identifies the champion model.
+    2.  Generates publication-quality visualizations:
+        -   A bar chart comparing the performance of the three models.
+        -   A detailed confusion matrix for the champion model.
+        -   A t-SNE plot to visualize the learned feature embeddings.
+    3.  Generates a detailed classification report with per-class metrics.
+-   **Output:** All figures and text reports saved to the `reports/` directory.
 
-## Installazione
+---
 
-### Installazione Automatica (Consigliata)
+## 4. How to Reproduce
 
-#### Linux/macOS:
+Follow these steps to set up the environment and reproduce our results.
+
+### Step 1: Clone the Repository
 ```bash
-./setup.sh
+git clone <your-repository-url>
+cd naml_project
 ```
 
-#### Windows (Prompt dei comandi):
-```cmd
-setup.bat
-```
-
-#### Windows (PowerShell):
-```powershell
-.\setup.ps1
-```
-
-### Installazione Manuale
-
-#### 1. Creare un Virtual Environment
-
+### Step 2: Set Up the Environment
+Create a Python virtual environment and install the required dependencies.
 ```bash
-python -m venv venv
-source venv/bin/activate  # Su Windows: venv\Scripts\activate
-```
-
-#### 2. Installare le Dipendenze
-
-```bash
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Utilizzo
+### Step 3: Download and Prepare Data
+Run the `setup.sh` script. This script will:
+1.  Create the necessary directory structure (`data/raw`, `data/processed`).
+2.  Set up the Kaggle API credentials (you must have your `kaggle.json` file in the `kaggle/` directory).
+3.  Download the GTZAN dataset from Kaggle into `data/raw`.
+4.  Unzip the dataset.
 
-### 1. Attivare l'Ambiente Virtuale
 ```bash
-# Linux/macOS
-source venv/bin/activate
-
-# Windows (Prompt dei comandi)
-venv\Scripts\activate.bat
-
-# Windows (PowerShell)
-venv\Scripts\Activate.ps1
+# Make sure your kaggle.json is in the kaggle/ directory first!
+bash setup.sh
 ```
 
-### 2. Avviare Jupyter Lab
-```bash
-jupyter lab
-```
+### Step 4: Run the Notebooks in Order
+Open the `notebooks/` directory and run the Jupyter notebooks sequentially:
+1.  **Run `00_Setup_and_Data_Preparation.ipynb`** to process the data.
+2.  **Run `01_Model_Training_Tournament.ipynb`** to train the models. This is computationally intensive and may take a significant amount of time.
+3.  **Run `02_Analysis_and_Publication_Results.ipynb`** to generate all the final figures and analyses.
 
-### 3. Preparazione dei Dati
-Eseguire il notebook `01_Data_Preparation_and_Feature_Extraction.ipynb` per:
-- Caricare e esplorare il dataset
-- Estrarre features audio (MFCC, Spectral Features, ecc.)
-- Preparare i dati per il training
-
-### 4. Training e Valutazione
-Eseguire il notebook `02_Model_Training_and_Evaluation.ipynb` per:
-- Addestrare modelli di machine learning e deep learning
-- Valutare le performance
-- Confrontare diversi approcci
-
-## Troubleshooting
-
-### Problemi Comuni
-
-**Errore: "python non riconosciuto"**
-- Assicurati che Python sia installato e nel PATH
-- Su Windows, reinstalla Python selezionando "Add Python to PATH"
-
-**Errore di permessi su PowerShell**
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
-
-**Problemi con TensorFlow**
-- Su sistemi più vecchi, potrebbe essere necessario installare una versione specifica
-- Per CPU only: `pip install tensorflow-cpu`
-
-**Errori di memoria durante il training**
-- Riduci la dimensione del batch
-- Usa il gradient checkpointing
-- Considera l'uso di un dataset ridotto per test
-
-## Features Audio Estratte
-
-- **MFCC (Mel-Frequency Cepstral Coefficients)**: Caratteristiche spettrali
-- **Spectral Centroid**: Centro di massa dello spettro
-- **Spectral Rolloff**: Frequenza sotto cui si concentra il 85% dell'energia
-- **Zero Crossing Rate**: Tasso di attraversamento dello zero
-- **Chroma Features**: Caratteristiche tonali
-- **Tempo**: Velocità del brano
-
-## Modelli Implementati
-
-1. **Machine Learning Tradizionale**:
-   - Random Forest
-   - Support Vector Machine (SVM)
-   - K-Nearest Neighbors (KNN)
-
-2. **Deep Learning**:
-   - Reti Neurali Dense
-   - Reti Neurali Convoluzionali (CNN)
-
-## Metriche di Valutazione
-
-- Accuracy
-- Precision, Recall, F1-score per classe
-- Matrice di confusione
-- Cross-validation
-
-## Requisiti di Sistema
-
-- Python 3.7+
-- Almeno 4GB di RAM
-- Spazio su disco: ~2GB per il dataset
-
-## Contributi
-
-Per contribuire al progetto:
-1. Fork del repository
-2. Crea un branch per la tua feature
-3. Commit delle modifiche
-4. Push al branch
-5. Crea una Pull Request
-
-## Licenza
-
-Questo progetto è distribuito sotto licenza MIT.
-
-## Contatti
-
-Per domande o suggerimenti, apri una issue nel repository.
+After running these notebooks, the `reports/` directory will be fully populated with the results documented in our paper.
