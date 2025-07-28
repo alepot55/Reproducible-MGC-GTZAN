@@ -12,7 +12,7 @@ sudo apt-get install -y libsndfile1
 # 2. Ambiente Virtuale Python
 if [ ! -d "venv" ]; then
     echo "📦 Creating virtual environment 'venv'..."
-    python3 -m v-env venv
+    python3 -m venv venv
 fi
 echo "✅ Activating virtual environment..."
 source venv/bin/activate
