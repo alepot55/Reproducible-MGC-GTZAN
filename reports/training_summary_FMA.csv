@@ -1,0 +1,2 @@
+Model,Dataset,Best_Val_Accuracy,Test_Accuracy,Epochs_Run
+UNet_Audio_Classifier,FMA_SMALL,0.6666666865348816,0.9399999976158142,24
