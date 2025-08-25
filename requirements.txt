@@ -1,16 +1,24 @@
-# --- TensorFlow e Supporto GPU (Metodo Ufficiale) ---
-tensorflow[and-cuda]
+# ==========================================================
+# Requirements for naml_project
+# Last Updated: [Current Date]
+#
+# NOTE: Using 'tensorflow' package which, as of v2.17,
+# includes its own CUDA 12.3 and cuDNN 8.9 libraries.
+# The system-wide CUDA installation is intentionally ignored.
+# ==========================================================
 
-# --- Libreria Probabilistica con dipendenze TF ---
-tensorflow-probability[tf]
+# --- Core ML & GPU ---
+# TensorFlow 2.17+ includes CUDA. No [and-cuda] needed.
+tensorflow
+tensorflow-probability
 
-# --- Elaborazione Dati e Audio ---
+# --- Data Processing & Audio ---
 scikit-learn
 pandas
 pysoundfile
 librosa
 
-# --- Ambiente Jupyter e Plotting ---
+# --- Jupyter Environment & Plotting ---
 jupyterlab
 ipywidgets
 matplotlib
@@ -18,6 +26,6 @@ seaborn
 tqdm
 tabulate
 
-# --- API Kaggle ---
+# --- APIs ---
 kaggle
 kagglehub

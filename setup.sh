@@ -1,34 +1,119 @@
 #!/bin/bash
-set -e
 
-echo "🎵 NAML Project - Setup (Official TensorFlow Method)"
-echo "================================================="
+# ==============================================================================
+# NAML Project - Environment Setup Script
+#
+# This script prepares the development environment by:
+# 1. Ensuring system dependencies are met.
+# 2. Creating a Python virtual environment.
+# 3. Installing all required Python packages via pip.
+#
+# Usage: ./setup.sh
+# ==============================================================================
 
-# 1. Prerequisito di Sistema (per Librosa)
-echo "🔧 Verifying system dependencies (libsndfile1)..."
-sudo apt-get update -y > /dev/null
-sudo apt-get install -y libsndfile1
+# --- Script Configuration ---
+# Exit immediately if a command exits with a non-zero status.
+# Treat unset variables as an error.
+# The return value of a pipeline is the status of the last command to exit
+# with a non-zero status, or zero if no command exited with a non-zero status.
+set -euo pipefail
 
-# 2. Ambiente Virtuale Python
-if [ ! -d "venv" ]; then
-    echo "📦 Creating virtual environment 'venv'..."
-    python3 -m venv venv
+# --- Color Definitions ---
+# Using tput for compatibility
+C_BLUE=$(tput setaf 4)
+C_GREEN=$(tput setaf 2)
+C_YELLOW=$(tput setaf 3)
+C_RED=$(tput setaf 1)
+C_BOLD=$(tput bold)
+C_RESET=$(tput sgr0)
+
+# --- Helper Functions ---
+# Log a message with a specific color and level
+log() {
+    local level_color="$1"
+    local level_text="$2"
+    local message="$3"
+    echo -e "${C_BOLD}${level_color}[${level_text}]${C_RESET} ${message}"
+}
+
+info()    { log "${C_BLUE}"   "INFO" "$1"; }
+success() { log "${C_GREEN}"  "OK"   "$1"; }
+warn()    { log "${C_YELLOW}" "WARN" "$1"; }
+error()   { log "${C_RED}"    "ERR"  "$1"; }
+
+# Function to be called on script interruption or exit
+cleanup() {
+    # Deactivate venv if it's active
+    if command -v deactivate &> /dev/null; then
+        deactivate
+    fi
+    info "Script finished. Exiting."
+    tput sgr0 # Reset terminal colors
+}
+trap cleanup EXIT
+
+# --- Main Script ---
+info "🎵 NAML Project - Environment Setup"
+echo "-------------------------------------------------"
+
+# 1. System Pre-requisites
+info "Checking for system dependencies (libsndfile1)..."
+if ! dpkg -s libsndfile1 &> /dev/null; then
+    warn "libsndfile1 not found. Attempting to install with sudo..."
+    sudo apt-get update -qq
+    sudo apt-get install -y libsndfile1
+    success "libsndfile1 installed successfully."
+else
+    success "libsndfile1 is already installed."
 fi
-echo "✅ Activating virtual environment..."
-source venv/bin/activate
 
-# 3. Installazione Dipendenze Python
-echo "⬆️  Updating pip..."
-python -m pip install --upgrade pip
+# 2. Python & Virtual Environment Setup
+VENV_DIR="venv"
+info "Checking for Python 3..."
+if ! command -v python3 &> /dev/null; then
+    error "python3 is not installed or not in PATH. Please install Python 3."
+    exit 1
+fi
+success "Python 3 found."
 
-if [ ! -f "requirements.txt" ]; then
-    echo "❌ ERROR: requirements.txt not found."
+if [ ! -d "$VENV_DIR" ]; then
+    info "Creating Python virtual environment at './${VENV_DIR}'..."
+    python3 -m venv "$VENV_DIR"
+    success "Virtual environment created."
+else
+    success "Virtual environment './${VENV_DIR}' already exists."
+fi
+
+info "Activating virtual environment..."
+# shellcheck source=/dev/null
+source "${VENV_DIR}/bin/activate"
+
+# 3. Python Dependency Installation
+REQUIREMENTS_FILE="requirements.txt"
+info "Checking for Python package manager (pip)..."
+if ! command -v pip &> /dev/null; then
+    error "'pip' not found within the virtual environment. The venv might be corrupted."
     exit 1
 fi
 
-echo "📚 Installing Python packages from requirements.txt..."
-python -m pip install -r requirements.txt
+info "Upgrading pip to the latest version..."
+pip install --upgrade pip --quiet
+success "pip is up to date."
+
+info "Checking for '${REQUIREMENTS_FILE}'..."
+if [ ! -f "$REQUIREMENTS_FILE" ]; then
+    error "'${REQUIREMENTS_FILE}' not found in the current directory. Cannot proceed."
+    exit 1
+fi
+success "'${REQUIREMENTS_FILE}' found."
+
+info "Installing Python packages... (This may take several minutes)"
+pip install -r "$REQUIREMENTS_FILE"
+success "All Python packages installed successfully."
 
 echo ""
-echo "🎉 Setup complete! The environment is ready."
-echo "To activate in the future, run: source venv/bin/activate"
+echo "-------------------------------------------------"
+success "${C_BOLD}🎉 Setup complete! The environment is ready to use.${C_RESET}"
+info    "To activate it manually in a new terminal, run:"
+info    "    ${C_YELLOW}source ${VENV_DIR}/bin/activate${C_RESET}"
+echo "-------------------------------------------------"
