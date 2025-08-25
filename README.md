@@ -23,18 +23,26 @@ The project is organized into a clean and logical directory structure:
 
 ```
 .
-├── models/              # Saved .keras models from the final training run.
+├── models/              # Saved .keras models from the final training runs.
 ├── notebooks/           # Jupyter notebooks detailing the project workflow.
-│   ├── 1_gtzan_experiment/
-│   │   ├── 00_Setup_and_Data_Preparation_GTZAN.ipynb
-│   │   ├── 01_Model_Training_Tournament_GTZAN.ipynb  # WP1 + WP2
-│   │   └── 01c_KFold_CV_UNet_GTZAN.ipynb             # WP4 (optional)
+│   ├── gtzan/
+│   │   ├── 00_setup.ipynb
+│   │   ├── 01_train_tournament.ipynb   # WP1 + WP2
+│   │   └── 01c_kfold_unet.ipynb        # WP4 (optional)
 │   │
-│   ├── 2_fma_experiment/
-│   │   ├── 00b_Setup_and_Data_Preparation_FMA.ipynb
-│   │   └── 01b_Model_Training_FMA.ipynb              # WP3
+│   ├── fma/
+│   │   ├── 00_setup.ipynb
+│   │   └── 01_train.ipynb              # WP3
 │   │
-│   └── 02_Final_Analysis_and_Paper_Figures.ipynb     # Aggregates all results
+│   ├── indian/
+│   │   ├── 00_setup.ipynb
+│   │   └── 01_train.ipynb
+│   │
+│   ├── tabla/
+│   │   ├── 00_setup.ipynb
+│   │   └── 01_train.ipynb
+│   │
+│   └── final_analysis.ipynb            # Aggregates all results and figures
 ├── paper.pdf            # The final research paper in PDF format.
 ├── reports/             # All generated figures, tables, and reports.
 ├── requirements.txt     # Python dependencies for the project.
@@ -48,7 +56,7 @@ The project is organized into a clean and logical directory structure:
 
 Our research process is documented across three distinct Jupyter notebooks, each with a specific responsibility. This separation ensures a clean and reproducible workflow.
 
-### 📓 `00_Setup_and_Data_Preparation_GTZAN.ipynb`
+### 📓 `gtzan/00_setup.ipynb`
 This notebook is the foundation of the project. It handles the critical task of preparing the GTZAN dataset with a leak-free pipeline.
 
 -   **Input:** Raw GTZAN audio files.
@@ -59,7 +67,7 @@ This notebook is the foundation of the project. It handles the critical task of 
     4.  Standardizes features by fitting a scaler **only on the training data**.
 -   **Output:** Processed NumPy arrays (`X_train`, `y_train`, etc.) and fitted `scaler`/`label_encoder` objects saved to the `data/processed` directory (not tracked by Git).
 
-### 📓 `01_Model_Training_Tournament_GTZAN.ipynb`
+### 📓 `gtzan/01_train_tournament.ipynb`
 This is the primary computation notebook. It takes the processed data and runs our definitive comparative analysis with and without SpecAugment, also computing efficiency metrics.
 
 -   **Input:** The processed data arrays from Notebook 00.
@@ -71,7 +79,7 @@ This is the primary computation notebook. It takes the processed data and runs o
     -   Best model weights (`.keras` files) saved to the `models/` directory.
     -   A final summary CSV (`training_summary_final.csv`) saved to the `reports/` directory.
 
-### 📓 `02_Final_Analysis_and_Paper_Figures.ipynb`
+### 📓 `final_analysis.ipynb`
 This notebook aggregates all results and produces publication-quality figures. It **does not train any models**. Code is English-only; explanatory text is bilingual where helpful.
 
 -   **Input:** The `training_summary_final.csv` and the best `.keras` models.
@@ -118,12 +126,12 @@ bash setup.sh
 
 ### Step 4: Run the Notebooks in Order
 Open the `notebooks/` directory and run the Jupyter notebooks sequentially:
-1.  GTZAN prep — `1_gtzan_experiment/00_Setup_and_Data_Preparation_GTZAN.ipynb`
-2.  GTZAN tournament (WP1 + WP2) — `1_gtzan_experiment/01_Model_Training_Tournament_GTZAN.ipynb`
-3.  Optional WP4 (5-fold CV UNet) — `1_gtzan_experiment/01c_KFold_CV_UNet_GTZAN.ipynb`
-4.  FMA Small prep — `2_fma_experiment/00b_Setup_and_Data_Preparation_FMA.ipynb`
-5.  FMA Small training (WP3) — `2_fma_experiment/01b_Model_Training_FMA.ipynb`
-6.  Final analysis — `02_Final_Analysis_and_Paper_Figures.ipynb`
+1.  GTZAN prep — `gtzan/00_setup.ipynb`
+2.  GTZAN tournament (WP1 + WP2) — `gtzan/01_train_tournament.ipynb`
+3.  Optional WP4 (5-fold CV UNet) — `gtzan/01c_kfold_unet.ipynb`
+4.  FMA Small prep — `fma/00_setup.ipynb`
+5.  FMA Small training (WP3) — `fma/01_train.ipynb`
+6.  Final analysis — `final_analysis.ipynb`
 
 After running these notebooks, the `reports/` directory will be fully populated with the results documented in our paper.
 
@@ -151,16 +159,24 @@ We upgraded the project to support a research-grade analysis plan:
 
 ```
 notebooks/
-├── 1_gtzan_experiment/
-│   ├── 00_Setup_and_Data_Preparation_GTZAN.ipynb
-│   ├── 01_Model_Training_Tournament_GTZAN.ipynb  # WP1 + WP2
-│   └── 01c_KFold_CV_UNet_GTZAN.ipynb             # WP4 (optional)
+├── gtzan/
+│   ├── 00_setup.ipynb
+│   ├── 01_train_tournament.ipynb   # WP1 + WP2
+│   └── 01c_kfold_unet.ipynb        # WP4 (optional)
 │
-├── 2_fma_experiment/
-│   ├── 00b_Setup_and_Data_Preparation_FMA.ipynb
-│   └── 01b_Model_Training_FMA.ipynb              # WP3
+├── fma/
+│   ├── 00_setup.ipynb
+│   └── 01_train.ipynb              # WP3
 │
-└── 02_Final_Analysis_and_Paper_Figures.ipynb     # Aggregates all results
+├── indian/
+│   ├── 00_setup.ipynb
+│   └── 01_train.ipynb
+│
+├── tabla/
+│   ├── 00_setup.ipynb
+│   └── 01_train.ipynb
+│
+└── final_analysis.ipynb            # Aggregates all results
 ```
 
 ## How to run
@@ -170,11 +186,11 @@ notebooks/
 - Ensure `data/gtzan/genres` is present (use the original Notebook 00 to download if needed).
 
 2) GTZAN preparation
-- Run `notebooks/1_gtzan_experiment/00_Setup_and_Data_Preparation_GTZAN.ipynb`
-  (It reuses arrays saved by the original `notebooks/00_Setup_and_Data_Preparation.ipynb`).
+- Run `notebooks/gtzan/00_setup.ipynb`
+  (It reuses arrays saved to `data/processed/`).
 
 3) WP1 + WP2 on GTZAN
-- Run `notebooks/1_gtzan_experiment/01_Model_Training_Tournament_GTZAN.ipynb`.
+- Run `notebooks/gtzan/01_train_tournament.ipynb`.
 - It trains three models with augmentation and without, saving:
   - `reports/training_summary_WITH_AUG.csv`
   - `reports/training_summary_NO_AUG.csv`
@@ -182,15 +198,15 @@ notebooks/
 
 4) WP3 on FMA Small (generalization)
 - Place FMA Small at `data/fma_small/` (folder with genre subfolders).
-- Run `notebooks/2_fma_experiment/00b_Setup_and_Data_Preparation_FMA.ipynb`.
-- Run `notebooks/2_fma_experiment/01b_Model_Training_FMA.ipynb` (UNet only). It writes `reports/training_summary_FMA.csv`.
+- Run `notebooks/fma/00_setup.ipynb`.
+- Run `notebooks/fma/01_train.ipynb` (UNet only). It writes `reports/training_summary_FMA.csv`.
 
 5) Final analysis and figures
-- Run `notebooks/02_Final_Analysis_and_Paper_Figures.ipynb` to produce:
+- Run `notebooks/final_analysis.ipynb` to produce:
   - WP1 comparison table: with vs without augmentation (+ percentage gain)
   - WP2 efficiency table: Params, approx FLOPs, latency, accuracy
   - FMA summary table
   - Leaderboard and champion deep-dive: normalized and raw confusion matrix, classification report, and t-SNE of learned features
 
 6) WP4 (optional)
-- Run `notebooks/1_gtzan_experiment/01c_KFold_CV_UNet_GTZAN.ipynb` to compute 5-fold CV on the GTZAN train+val split for UNet. Produces `reports/kfold_cv_unet_gtzan.csv` with mean±std.
+- Run `notebooks/gtzan/01c_kfold_unet.ipynb` to compute 5-fold CV on the GTZAN train+val split for UNet. Produces `reports/kfold_cv_unet_gtzan.csv` with mean±std.
